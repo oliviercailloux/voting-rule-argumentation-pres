@@ -11,12 +11,12 @@
 %\setbeamertemplate{headline}[singleline]
 %\setbeamertemplate{footline}[authortitle]
 
-\title[Title]{The title}
-\subject{Ze subject}
-\keywords{key, koy}
-\author{\emph{Olivier Cailloux} inst{1} \and Sébastien Destercke\inst{2}}
-\institute[LAMSADE]{\inst{1} LAMSADE, Université Paris-Dauphine \and \inst{2} Heudiasyc, Université de Technologie de Compiègne}
-\date{\formatdate{6}{7}{2017}}
+\title[Automatic argumentation]{Towards automatic argumentation about voting rules}
+\subject{Social choice}
+\keywords{empirical, theorem proving, automatic proofs}
+\author{Michael Kirsten \inst{1} \and \emph{Olivier Cailloux} \inst{2}}
+\institute[KIT, LAMSADE]{\inst{1} Dept. of Informatics, Karlsruhe Institute of Technology (KIT) \and \inst{2} LAMSADE, Université Paris-Dauphine}
+\date{\formatdate{3}{7}{2018}}
 
 \begin{document}
 \begin{frame}[plain]
@@ -31,29 +31,29 @@
 			\includegraphics[height=1cm]{PSL.png}
 		};
 		\path (current page.south) ++ (0, 4em) node[anchor=south, inner sep=0] {
-			\scriptsize\url{https://github.com/oliviercailloux/REPO}
+			\scriptsize\url{https://github.com/oliviercailloux/voting-rule-argumentation-pres}
 		};
 %thanks to https://stackoverflow.com/questions/2423777/is-it-possible-to-create-a-remote-repo-on-github-from-the-cli-without-opening-br/13366414#13366414
-%curl -u 'oliviercailloux' https://api.github.com/user/repos -d '{"name":"REPO"}'
-%git remote add origin git@github.com:oliviercailloux/REPO.git
+%curl -u 'oliviercailloux' https://api.github.com/user/repos -d '{"name":"voting-rule-argumentation-pres"}'
+%git remote add origin git@github.com:oliviercailloux/voting-rule-argumentation-pres.git
 %git push --set-upstream origin master
 	}
 	\titlepage
 \end{frame}
 \addtocounter{framenumber}{-1}
 
-\section{Context}
-\subsection{Focus}
 \begin{frame}
-	\frametitle{\subsecname}
-	
-Hello (\dots)
-	\begin{block}{Object of interest}
-%		\setlength\abovedisplayskip{1 ex}% reduce space above equations
-		\begin{itemize}
-			\item \ac{MCDA}
-			\item Decision problem: objects (\emph{alternatives}) to be evaluated using conflicting points of view (\emph{criteria})
-		\end{itemize}
+	\frametitle{Introduction}
+	\begin{block}{Context}
+	\begin{itemize}
+		\item Voting rule: a systematic way of aggregating different opinions and decide
+		\item Multiple reasonable ways of doing this
+		\item Different voting rules have different interesting properties
+		\item None satisfy all desirable properties
+	\end{itemize}
+	\end{block}
+	\begin{block}{Our goal}
+		We want to easily communicate about strength and weaknesses of voting rules.
 	\end{block}
 \end{frame}
 
@@ -69,7 +69,344 @@ Hello (\dots)
 	\end{frame}
 }
 
-\section{Second}
+\section{Context}
+\subsection{Introduction}
+\begin{frame}[fragile]
+	\frametitle{Voting rule}
+	
+	\begin{description}[Profile (on $A$)]
+		\item[Alternatives] $\allalts = \set{a, b, c, d, \ldots}$; $\card{\allalts}=m$
+		\item[Possible voters] $\allvoters = \set{1, 2, \ldots}$
+		\item[Voters] $\emptyset \subset \voters \subseteq \allvoters$
+%		\item[Linear orders on $A \subseteq \allalts$] $\linors$.
+		\item[Profile] partial function $\prof$ from $\allvoters$ to linear orders on $\allalts$.
+		\item[Voting rule] function $f$ mapping each $\prof$ to winners $\emptyset \subset A \subseteq \allalts$.
+	\end{description}
+	\vfill
+	\begin{center}
+		\begin{tikzpicture}
+			\path node[profile matrix] (profile) {
+				R_1&
+				R_2
+				\\
+				| (profile11) | a&
+				b
+				\\
+				b&
+				a
+				\\
+				c&
+				| (profile32) | c
+				\\
+			};
+			\path ($(profile.south west)!.5!(profile.south east)$) ++ (0, -5mm) node {$\prof$};
+			
+			\path node[draw, rectangle, fit=(profile11) (profile32), outer xsep=2mm, outer ysep=1mm] (justprofile) {};
+			\path (justprofile.east) ++ (2.5cm, 0) node[inner sep=0] (winners) {\mbox{} $A = \Set{a, b}$};
+			\path[draw, ->] (justprofile.east) to[bend left=35] node[anchor=south] {$f$} (winners.west);
+
+			\path[draw, decorate, decoration={brace, mirror}] (justprofile.south west) -- (justprofile.south east);
+		\end{tikzpicture}
+	\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Example profile}
+	\begin{equation}
+		\begin{array}{lrrrrrr}
+			&\multicolumn{6}{c}{\text{nb voters}}\\
+		\cmidrule{2-7}
+				&33	&16	&3	&8	&18	&22	\\
+		\midrule
+			1	&a	&b	&c	&c	&d	&e	\\
+			2	&b	&d	&d	&e	&e	&c	\\
+			3	&c	&c	&b	&b	&c	&b	\\
+			4	&d	&e	&a	&d	&b	&d	\\
+			5	&e	&a	&e	&a	&a	&a	\\
+		\end{array}
+	\end{equation}
+	Who wins?\pause
+	\begin{itemize}
+		\item Most top-1: $a$
+		\item $c$ is in the top 3 for everybody
+		\item delete worst first, lowest nb of pref: $c$, $b$, $e$, $a$ ⇒ $d$
+		\item delete worst first, from bottom: $a$, $e$, $d$, $b$ ⇒ $c$
+		\item Borda: $b$
+%		\item Condorcet: $c$
+	\end{itemize}
+\end{frame}
+
+\subsection{Two voting rules}
+\begin{frame}
+	\frametitle{Borda}
+	Given a profile $\prof$:
+	\begin{itemize}
+		\item score of $a \in \allalts$: number of alternatives it beats
+		\item the highest scores win
+	\end{itemize}
+	
+	\begin{equation}
+		\prof =
+		\begin{array}{rrrrr}
+			a	&	a	&	a	&	b	&	b\\
+			b	&	b	&	b	&	c	&	c\\
+			c	&	c	&	c	&	a	&	a
+		\end{array}
+	\end{equation}
+	\begin{itemize}
+		\item score $a$ is\dots? \pause $2 + 2 + 2 = 6$
+		\item score $b$ is $1 + 1 + 1 + 2 + 2 = 7$
+		\item score $c$ is $1 + 1 = 2$
+	\end{itemize}
+	Winner: $b$.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Copeland}
+	Given a profile $\prof$:
+	\begin{itemize}
+		\item score of $a \in \allalts$: number of alternatives against which it obtains a strict majority…
+		\item … minus: number of alternatives that obtains a strict majority against $a$
+		\item the highest scores win
+	\end{itemize}
+	
+	
+	\begin{equation}
+		\prof =
+		\begin{array}{rrrrr}
+			a	&	a	&	a	&	b	&	b\\
+			b	&	b	&	b	&	c	&	c\\
+			c	&	c	&	c	&	a	&	a
+		\end{array}
+	\end{equation}
+	\begin{itemize}
+		\item score $a$ is\dots? \pause $\card{\set{b, c}} - \card{\emptyset} = 2$
+		\item score $b$ is $\card{\set{c}} - \card{\set{a}} = 0$
+		\item score $c$ is $\card{\emptyset} - \card{\set{a, b}} = -2$
+	\end{itemize}
+	Winner: $a$.
+\end{frame}
+	
+\subsection{Axiomatic analysis}
+\begin{frame}
+	\frametitle{\subsecname}
+	\begin{quote}
+		Rather than dream up a multitude of arbitration schemes and determine whether or not each withstands the best of plausibility in a host of special cases, let us invert the procedure. Let us examine our subjective intuition of fairness and formulate this as a set of precise desiderata that any acceptable arbitration scheme must fulfil. Once these desiderata are formalized as axioms, then the problem is reduced to a mathematical investigation of the existence of and characterization of arbitration schemes which satisfy the axioms.
+	\end{quote}
+	\citet[p. 121]{luce_games_1957}\par
+\end{frame}
+
+\begin{frame}
+	\frametitle{What’s an axiom?}
+	\begin{itemize}
+		\item An axiom (for us) is a principle
+		\item Expressed formally
+		\item That dictates some behavior of a voting rule
+		\item In some conditions
+		\item Usually seen as something to be satisfied
+		\item Ideally, some union of some such axioms define exactly one rule
+		\item Some axioms can be shown to be incompatible
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Unanimity}
+	\begin{definition}[Unanimity]
+		We ought to select as winner someone who has no unanimously preferred alternative
+	\end{definition}
+	\begin{equation}
+		\prof =
+		\begin{array}{rrr}
+			a	&	a	&	b\\
+			b	&	b	&	c\\
+			c	&	c	&	a
+		\end{array}
+	\end{equation}
+	Constraint? \pause Do not take $c$ as $b$ is unanimously preferred to it.	\pause
+	\begin{equation}
+		\prof =
+		\begin{array}{rrr}
+			a	&	a	&	b\\
+			b	&	c	&	c\\
+			c	&	b	&	a
+		\end{array}
+	\end{equation}
+	Constraint? \pause No constraint.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Condorcet’s principle}
+	\begin{block}{Condorcet’s principle}
+		We ought to take the Condorcet winner as sole winner if it exists.
+		\begin{itemize}
+			\item $a$ \emph{beats} $b$ iff more than half the voters prefer $a$ to $b$.
+			\item $a$ is a \emph{Condorcet winner} iff $a$ beats every other alternatives.
+		\end{itemize}
+	\end{block}
+	\vfill
+	\begin{equation}
+		\prof =
+		\begin{array}{rrrrr}
+			a	&	a	&	a	&	b	&	b\\
+			b	&	b	&	b	&	c	&	c\\
+			c	&	c	&	c	&	a	&	a
+		\end{array}
+	\end{equation}
+	 Who wins? \pause $a$
+\end{frame}
+
+\begin{frame}
+	\frametitle{Borda does not satisfy Condorcet}
+	\begin{equation}
+		\prof =
+		\begin{array}{rrrrr}
+			a	&	a	&	a	&	b	&	b\\
+			b	&	b	&	b	&	c	&	c\\
+			c	&	c	&	c	&	a	&	a
+		\end{array}
+	\end{equation}
+	\begin{itemize}
+		\item Borda winners? \pause $b$
+		\item Condorcet winner? \pause $a$
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Cancellation}
+	\begin{definition}[Cancellation]
+		When all pairs of alternatives $(a, b)$ in a profile are such that $a$ is preferred to $b$ as many times as $b$ to $a$, we ought to select all winners as ex-æquo
+	\end{definition}
+	\begin{example}
+		\begin{equation}
+			f\left(%
+			\begin{array}{rrrr}
+				a&b&c&c\\
+				b&a&a&b\\
+				c&c&b&a\\
+			\end{array}\right) = \allalts
+		\end{equation}
+	\end{example}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Reinforcement}
+	\begin{definition}[Reinforcement]
+		When joining two sets of voters, exactly those winners that each set accepts should be selected, if possible
+	\end{definition}
+	\begin{example}
+		\begin{equation}
+			\prof_1 =
+			\begin{array}{cc}
+				a&b\\
+				b&a\\
+				c&c\\
+			\end{array},
+			A_1 = \set{a, b},
+			\prof_2 =
+			\begin{array}{ccc}
+				a&b&a\\
+				b&a&c\\
+				c&c&b\\
+			\end{array},
+			A_2 = \set{a},
+		\end{equation}
+		\begin{equation}
+			\prof =
+			\begin{array}{ccccc}
+				a&b&a&b&a\\
+				b&a&b&a&c\\
+				c&c&c&c&b\\
+			\end{array}.
+			\text{ Winners? }
+			\pause
+			\set{a}
+		\end{equation}
+	\end{example}
+\end{frame}
+
+\subsection{Objective}
+\begin{frame}
+	\frametitle{Our objective}
+	Produce automatically “arguments” of the kind: voting rule $f$ does not satisfy axiom $a$
+	\begin{itemize}
+		\item To better understand their differences
+		\item To help debate and choose a voting rule
+		\item To investigate empirical attitudes towards given voting rules
+	\end{itemize}
+\end{frame}
+
+\section{Approach}
+\subsection{Software Bounded Model Checking}
+\begin{frame}[fragile]{Software Bounded Model Checking (SBMC)}
+\hspace*{-1em}
+\begin{minipage}{0.5\textwidth}
+\begin{block}{}
+\vspace*{-1em}
+\begin{tikzpicture}
+{%\footnotesize
+\node (before) at (0,5.75) {};
+\node[ellipse, draw] (start) at (0,5) {\texttt{while(x < y) x += y;}};
+\node[ellipse, draw] (threea) at (-1.5,4) {\dots};
+\node[ellipse, draw] (threeb) at (1.5,4) {\texttt{x += y;}};
+\node[ellipse, draw] (fivea) at (0,3) {\texttt{x += y;}};
+\node[ellipse, draw] (fiveb) at (3,3) {\dots};
+\node[ellipse, draw] (seven) at (0,2) {\dots};
+}
+{\scriptsize
+\path[-latex,draw] (start) -- (threea) node [midway,red] {\quad\texttt{\textbf{!(x < y)}}};
+\path[-latex,draw] (start) -- (threeb) node [midway,red] {\quad\texttt{\textbf{x < y}}};
+
+\path[-latex,draw] (threeb) -- (fivea) node [midway,red] {\texttt{\textbf{x < y}}};
+\path[-latex,draw] (threeb) -- (fiveb) node [midway,red] {\;\texttt{\textbf{!(x < y)}}};
+}
+
+{\normalsize
+\path[-latex,draw] (fivea) -- (seven);
+\path[-latex,draw] (before) -- (start);
+}
+\end{tikzpicture}
+\end{block}
+\end{minipage}\begin{minipage}{0.55\textwidth}
+\begin{itemize}
+\item Static program analysis using symbolic execution
+\item Exhaustive check by unwinding\\ the control flow graph
+\item Bounded in number of loop unwindings and recursions
+\end{itemize}
+\end{minipage}
+
+\pause
+\begin{itemize}
+\item SBMC tool converts program into logical equations, sent to SAT solver
+\item Special “unwinding assertion” claims added to check whether longer program paths may be possible
+\item Checks whether specified assertions can be violated
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Specifying and Verifying Properties in SBMC\hspace*{-1.8em}}
+\begin{block}{Specification}
+\begin{itemize}
+%\item Program automatically encoded into logic using SSA form
+\item Properties specified using \texttt{assume} and \texttt{assert} statements
+\item A program \texttt{Prog} is \textbf{correct} if
+\[ \texttt{Prog} \wedge \bigwedge \texttt{assume} \Rightarrow \bigwedge \texttt{assert} \]
+is valid.
+\item \texttt{Prog} is automatically generated logical encoding of the program
+\end{itemize}
+\end{block}
+
+\pause
+
+\begin{block}{Verification}
+\begin{itemize}
+\item Checking properties for programs generally undecidable
+\item SBMC analyses only program runs up to \textbf{bounded} length
+\item Property checking becomes decidable by logical encoding
+\item Can be decided using SAT- or SMT-solver
+\end{itemize}
+\end{block}
+\end{frame}
+
+\section{Empirical results}
 
 \begin{frame}[plain]
 	\addtocounter{framenumber}{-1}
@@ -82,8 +419,6 @@ Hello (\dots)
 \appendix
 \AtBeginSection{
 }
-
-\end{document}
 
 \clearpage\pdfbookmark[2]{\refname}{\refname}
 \begin{frame}[allowframebreaks]
