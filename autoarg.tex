@@ -1,0 +1,110 @@
+\RequirePackage[l2tabu, orthodox]{nag}
+\RequirePackage{silence}
+\documentclass[french,english]{beamer}
+\input{preamble/packages}
+\input{preamble/math_basics}
+\input{preamble/math_mine}
+\input{preamble/redac}
+\input{preamble/draw}
+\input{preamble/acronyms}
+
+%\setbeamertemplate{headline}[singleline]
+%\setbeamertemplate{footline}[authortitle]
+
+\title[Title]{The title}
+\subject{Ze subject}
+\keywords{key, koy}
+\author{\emph{Olivier Cailloux} inst{1} \and Sébastien Destercke\inst{2}}
+\institute[LAMSADE]{\inst{1} LAMSADE, Université Paris-Dauphine \and \inst{2} Heudiasyc, Université de Technologie de Compiègne}
+\date{\formatdate{6}{7}{2017}}
+
+\begin{document}
+\begin{frame}[plain]
+	\tikz[remember picture,overlay]{
+		\path (current page.south west) node[anchor=south west, inner sep=0] {
+			\includegraphics[height=1cm]{LAMSADE95.jpg}
+		};
+		\path (current page.south) ++ (0, 1mm) node[anchor=south, inner sep=0] {
+			\includegraphics[height=9mm]{Dauphine.jpg}
+		};
+		\path (current page.south east) node[anchor=south east, inner sep=0] {
+			\includegraphics[height=1cm]{PSL.png}
+		};
+		\path (current page.south) ++ (0, 4em) node[anchor=south, inner sep=0] {
+			\scriptsize\url{https://github.com/oliviercailloux/REPO}
+		};
+%thanks to https://stackoverflow.com/questions/2423777/is-it-possible-to-create-a-remote-repo-on-github-from-the-cli-without-opening-br/13366414#13366414
+%curl -u 'oliviercailloux' https://api.github.com/user/repos -d '{"name":"REPO"}'
+%git remote add origin git@github.com:oliviercailloux/REPO.git
+%git push --set-upstream origin master
+	}
+	\titlepage
+\end{frame}
+\addtocounter{framenumber}{-1}
+
+\section{Context}
+\subsection{Focus}
+\begin{frame}
+	\frametitle{\subsecname}
+	
+Hello (\dots)
+	\begin{block}{Object of interest}
+%		\setlength\abovedisplayskip{1 ex}% reduce space above equations
+		\begin{itemize}
+			\item \ac{MCDA}
+			\item Decision problem: objects (\emph{alternatives}) to be evaluated using conflicting points of view (\emph{criteria})
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Outline}
+	\tableofcontents[hideallsubsections, sectionstyle=shaded/show]
+\end{frame}
+
+\AtBeginSection{
+	\begin{frame}
+		\frametitle{Outline}
+		\tableofcontents[currentsection, hideallsubsections]
+	\end{frame}
+}
+
+\section{Second}
+
+\begin{frame}[plain]
+	\addtocounter{framenumber}{-1}
+	\begin{center}
+		\huge
+		\textit{Thank you for your attention!}
+	\end{center}
+\end{frame}
+
+\appendix
+\AtBeginSection{
+}
+
+\end{document}
+
+\clearpage\pdfbookmark[2]{\refname}{\refname}
+\begin{frame}[allowframebreaks]
+	\frametitle{\refname}
+ 	\bibliography{zotero}
+\end{frame}
+
+\clearpage\pdfbookmark{License}{License}
+\begin{frame}[plain]
+	\frametitle{License}
+	This presentation, and the associated \LaTeX{} code, are published under the \href{http://opensource.org/licenses/MIT}{MIT license}. Feel free to reuse (parts of) the presentation, under condition that you cite the author.
+	
+	Credits are to be given to \href{http://www.lamsade.dauphine.fr/~ocailloux/}{Olivier Cailloux}, Université Paris-Dauphine.
+\end{frame}
+\addtocounter{framenumber}{-1}
+\end{document}
+
+\begin{frame}
+	\frametitle{\subsecname}
+	\begin{itemize}
+		\item 
+	\end{itemize}
+\end{frame}
+
