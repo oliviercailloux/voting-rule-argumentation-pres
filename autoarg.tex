@@ -8,9 +8,6 @@
 \input{preamble/draw}
 \input{preamble/acronyms}
 
-%\setbeamertemplate{headline}[singleline]
-%\setbeamertemplate{footline}[authortitle]
-
 \title[Automatic argumentation]{Towards automatic argumentation about voting rules}
 \subject{Social choice}
 \keywords{empirical, theorem proving, automatic proofs}
@@ -33,10 +30,6 @@
 		\path (current page.south) ++ (0, 4em) node[anchor=south, inner sep=0] {
 			\scriptsize\url{https://github.com/oliviercailloux/voting-rule-argumentation-pres}
 		};
-%thanks to https://stackoverflow.com/questions/2423777/is-it-possible-to-create-a-remote-repo-on-github-from-the-cli-without-opening-br/13366414#13366414
-%curl -u 'oliviercailloux' https://api.github.com/user/repos -d '{"name":"voting-rule-argumentation-pres"}'
-%git remote add origin git@github.com:oliviercailloux/voting-rule-argumentation-pres.git
-%git push --set-upstream origin master
 	}
 	\titlepage
 \end{frame}
@@ -212,7 +205,7 @@
 \begin{frame}
 	\frametitle{Unanimity}
 	\begin{definition}[Unanimity]
-		We ought to select as winner someone who has no unanimously preferred alternative
+		We may not select as winner someone who has some unanimously preferred alternative
 	\end{definition}
 	\begin{equation}
 		\prof =
@@ -327,7 +320,7 @@
 \subsection{Objective}
 \begin{frame}
 	\frametitle{Our objective}
-	Produce automatically “arguments” of the kind: voting rule $f$ does not satisfy axiom $a$
+	Produce automatically “arguments” of the kind: voting rule $f$ does not satisfy axiom $a$ on profile $R$
 	\begin{itemize}
 		\item To better understand their differences
 		\item To help debate and choose a voting rule
@@ -336,66 +329,124 @@
 \end{frame}
 
 \section{Approach}
+\subsection{Overview}
+\begin{frame}
+	\frametitle{Overview}
+	\begin{itemize}
+		\item Given a voting rule $f$ and an axiom $a$
+		\item $a$ indicates, given $\prof$ and winners $W$, if $(\prof, W)$ fails the axiom
+	\end{itemize}
+	\centering
+	\begin{tikzpicture}
+		\path node (R) {$\prof$};
+		\path (R.east) ++ (2cm, 0) node[anchor=west] (W) {$W$};
+		\path[draw, ->] (R.east) to[bend left=35] node[anchor=south] {$f$} (W.west);
+		\path (W.east) ++ (1cm, 0) node[anchor=west] (RW) {$(\prof, W)$};
+		\path (RW.east) ++ (2cm, 0) node[anchor=west] (out) {pass / fail};
+		\path[draw, ->] (RW.east) to[bend left=35] node[anchor=south] {$a$} (out.west);
+	\end{tikzpicture}
+	\begin{block}{Objective}
+		Find $\prof$ such that $(\prof, f(\prof))$ fails $a$
+	\end{block}
+	\begin{block}{Example}
+		\begin{itemize}
+			\item $f$ = Borda
+			\item $a$ = Condorcet
+			\item $f(\prof) = \set{b}$ (with $\prof$ used previously)
+			\item $a(\prof, \set{b})$ fails
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Overview}
+	\begin{itemize}
+		\item Given implementations \texttt{algo\_$f$} and \texttt{algo\_$a$}
+	\end{itemize}
+	\centering
+	\begin{tikzpicture}
+		\path node (R) {$\prof$};
+		\path (R.east) ++ (2cm, 0) node[anchor=west] (W) {$W$};
+		\path[draw, ->] (R.east) to[bend left=35] node[anchor=south] (af) {\texttt{algo\_$f$}} (W.west);
+		\path (W.east) ++ (1cm, 0) node[anchor=west] (RW) {$(\prof, W)$};
+		\path (RW.east) ++ (2cm, 0) node[anchor=west] (out) {pass / fail};
+		\path[draw, ->] (RW.east) to[bend left=35] node[anchor=south] (aa) {\texttt{algo\_$a$}} (out.west);
+		\onslide<2>{
+			\path node[draw, color=red, rectangle, fit={(af) (W) (RW) (aa)}] (algo) {};
+			\path (algo.south) node[anchor=north] {\color{red}{\texttt{algo}}};
+		}
+	\end{tikzpicture}
+	\begin{itemize}
+		\item We view it as a whole program \texttt{algo}
+		\item We use SBMC, a software for checking properties of algorithms
+		\item We let SBMC search for an input $\prof$ that fails \texttt{algo}
+		\item Similar to searching for existence of a bug
+	\end{itemize}
+\end{frame}
+
 \subsection{Software Bounded Model Checking}
-\begin{frame}[fragile]{Software Bounded Model Checking (SBMC)}
-\hspace*{-1em}
-\begin{minipage}{0.5\textwidth}
-\begin{block}{}
-\vspace*{-1em}
-\begin{tikzpicture}
-{%\footnotesize
-\node (before) at (0,5.75) {};
-\node[ellipse, draw] (start) at (0,5) {\texttt{while(x < y) x += y;}};
-\node[ellipse, draw] (threea) at (-1.5,4) {\dots};
-\node[ellipse, draw] (threeb) at (1.5,4) {\texttt{x += y;}};
-\node[ellipse, draw] (fivea) at (0,3) {\texttt{x += y;}};
-\node[ellipse, draw] (fiveb) at (3,3) {\dots};
-\node[ellipse, draw] (seven) at (0,2) {\dots};
-}
-{\scriptsize
-\path[-latex,draw] (start) -- (threea) node [midway,red] {\quad\texttt{\textbf{!(x < y)}}};
-\path[-latex,draw] (start) -- (threeb) node [midway,red] {\quad\texttt{\textbf{x < y}}};
+\begin{frame}
+	\frametitle{Checking properties}
+%	\begin{lstlisting}
+		assume(x > 0);\\
+		i = 0;\\
+		x0 = x;\\
+		while (x < y) \{\\
+		\hspace{2cm}	x += y;\\
+		\hspace{2cm} i += 1;\\
+		\}\\
+		assert(x0+y*i >= x);
+%		
+%	\end{lstlisting}
+	\begin{itemize}
+		\item Given algorithm with parameters (example: $x$, $y$)
+		\item Check that some property holds
+		\item For all possible parameters
+		\item … that satisfy given assumptions
+		\item[⇒] search for $(x, y)$ that satisfy assumptions and fails assertion
+	\end{itemize}
+\end{frame}
 
-\path[-latex,draw] (threeb) -- (fivea) node [midway,red] {\texttt{\textbf{x < y}}};
-\path[-latex,draw] (threeb) -- (fiveb) node [midway,red] {\;\texttt{\textbf{!(x < y)}}};
-}
+\begin{frame}{Software Bounded Model Checking (SBMC)}
+	\begin{block}{Specification}
+		\begin{itemize}
+			\item Properties specified using \texttt{assume} and \texttt{assert} statements
+			\item A program \texttt{Prog} is \textbf{correct} iff:
+			\[ \texttt{Prog} \wedge \bigwedge \texttt{assume} \Rightarrow \bigwedge \texttt{assert} \]
+			\item \texttt{Prog} is automatically generated logical encoding of the program
+		\end{itemize}
+	\end{block}
+	\begin{itemize}
+		\item SBMC tool converts program into SAT
+		\item Exhaustive check by unwinding the control flow graph
+		\item Bounded in number of loop unwindings and recursions
+		\item Special “unwinding assertion” claims added to check whether longer program paths may be possible
+	\end{itemize}
+\end{frame}
 
-{\normalsize
-\path[-latex,draw] (fivea) -- (seven);
-\path[-latex,draw] (before) -- (start);
-}
-\end{tikzpicture}
-\end{block}
-\end{minipage}\begin{minipage}{0.55\textwidth}
-\begin{itemize}
-\item Static program analysis using symbolic execution
-\item Exhaustive check by unwinding\\ the control flow graph
-\item Bounded in number of loop unwindings and recursions
-\end{itemize}
-\end{minipage}
-
-\pause
-\begin{itemize}
-\item SBMC tool converts program into logical equations, sent to SAT solver
-\item Special “unwinding assertion” claims added to check whether longer program paths may be possible
-\item Checks whether specified assertions can be violated
-\end{itemize}
+\begin{frame}
+	\frametitle{Taking care of loops in SBMC}
+	\texttt{while(x < y) x = x + y;}
+	
+	\begin{tikzpicture}
+		\node (start) at (0,5.75) {};
+		\node[ellipse, draw] (threea) at (-1.5,4) {\dots};
+		\node[ellipse, draw] (threeb) at (1.5,4) {\texttt{x1 = x0 + y0;}};
+		\node[ellipse, draw] (fivea) at (0, 2.5) {\texttt{x2 = x1 + y0;}};
+		\node[ellipse, draw] (fiveb) at (3, 2.5) {\dots};
+		\node[ellipse, draw] (seven) at (0, 1.5) {\dots};
+		
+		\path[-latex,draw] (start) -- (threea) node [midway, red, left] {\texttt{\textbf{!(x0 < y0)}}};
+		\path[-latex,draw] (start) -- (threeb) node [midway,red, right] {\texttt{\textbf{x0 < y0}}};
+		
+		\path[-latex,draw] (threeb) -- (fivea) node [midway, red, left] {\texttt{\textbf{x1 < y0}}};
+		\path[-latex,draw] (threeb) -- (fiveb) node [midway, red, right] {\texttt{\textbf{!(x1 < y0)}}};
+		
+		\path[-latex,draw] (fivea) -- (seven);
+	\end{tikzpicture}
 \end{frame}
 
 \begin{frame}{Specifying and Verifying Properties in SBMC\hspace*{-1.8em}}
-\begin{block}{Specification}
-\begin{itemize}
-%\item Program automatically encoded into logic using SSA form
-\item Properties specified using \texttt{assume} and \texttt{assert} statements
-\item A program \texttt{Prog} is \textbf{correct} if
-\[ \texttt{Prog} \wedge \bigwedge \texttt{assume} \Rightarrow \bigwedge \texttt{assert} \]
-is valid.
-\item \texttt{Prog} is automatically generated logical encoding of the program
-\end{itemize}
-\end{block}
-
-\pause
-
 \begin{block}{Verification}
 \begin{itemize}
 \item Checking properties for programs generally undecidable
@@ -407,6 +458,104 @@ is valid.
 \end{frame}
 
 \section{Empirical results}
+\subsection{Borda}
+\begin{frame}
+	\frametitle{Borda fails Condorcet}
+	A minimal counter-example (found in less than one second):
+	\begin{equation}
+		\prof =
+		\begin{array}{ccc}
+			c	&	c	&	b\\
+			b	&	b	&	a\\
+			a	&	a	&	c
+		\end{array}
+	\end{equation}
+	Borda rule elects $\{a,c\}$ instead of the Condorcet winner $c$
+	
+	The example can be easily inspected manually
+\end{frame}
+
+\begin{frame}
+	\frametitle{Borda fails Weak Majority}
+	A minimal counter-example in nb alts (< 1 sec):
+	\begin{equation}
+		\prof =
+		\begin{array}{ccccc}
+			a	&	a	&	a	&	b	&	b\\
+			b	&	b	&	b	&	c	&	c\\
+			c	&	c	&	c	&	a	&	a
+		\end{array}
+	\end{equation}
+	Borda elects $b$ instead of the majority winner $a$.
+
+	A minimal counter-example in nb voters (< 1 sec):
+	\begin{equation}
+		\prof =
+		\begin{array}{ccc}
+			d	&	d	&	c\\
+			c	&	c	&	a\\
+			a	&	b	&	b\\
+			b	&	a	&	d
+		\end{array}
+	\end{equation}
+	Borda elects $c$ instead of the majority winner $d$
+\end{frame}
+
+\subsection{Copeland}
+\begin{frame}[fragile]
+	\frametitle{Copeland fails Reinforcement}
+	\begin{center}
+	\begin{tikzpicture}[baseline]
+    \begin{axis}[
+    	title={Run-times for {\color{red}{2}}, {\color{green}{3}}, {\color{blue}{4}} and {\color{brown}{5}}
+    	alternatives in seconds.},
+    	height=0.8*\textheight,
+    	xlabel={Voters},
+    	ylabel={Run-time [minutes]},
+    	xmin=2,xmax=10,
+    	ymin=0,ymax=1800,
+    	xtick={0,1,2,3,4,5,6,7,8,9,10},
+    	xlabel near ticks,
+    	ylabel near ticks,
+     scaled y ticks={real:60},
+        ytick scale label code/.code={},
+   	ytick distance = 180
+        ]
+    	\addplot[red] table[x index=1,y index=2] {plots/copeland/reinforcement/cand_2.dat} node[pos=0.7,yshift=0.2cm,sloped] {2};
+    	\addplot[green] table[x index=1,y index=2] {plots/copeland/reinforcement/cand_3.dat} node[pos=0.5,yshift=0.2cm,sloped] {3};
+    	\addplot[blue] table[x index=1,y index=2] {plots/copeland/reinforcement/cand_4.dat} node[pos=0.6,yshift=0.2cm,sloped] {4};
+    	\addplot[brown] table[x index=1,y index=2] {plots/copeland/reinforcement/cand_5.dat} node[pos=0.3,yshift=0.2cm,sloped] {5};
+        \addplot[green, mark=*, only marks] table[x index=1,y index=2] {plots/copeland/reinforcement/cand_3_cexp.dat};
+    	\addplot[blue, mark=*, only marks] table[x index=1,y index=2] {plots/copeland/reinforcement/cand_4_cexp.dat};
+    	\addplot[brown, mark=*, only marks] table[x index=1,y index=2] {plots/copeland/reinforcement/cand_5_cexp.dat};
+    \end{axis}
+\end{tikzpicture}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Copeland fails Reinforcement}
+	A minimal counter-example (found in 32 seconds):
+	\begin{equation}
+		\prof_1 =
+		\begin{array}{cc}
+			b	&	a\\
+			a	&	c\\
+			c	&	b
+		\end{array},
+		\hspace{1em}
+		\prof_2 =
+		\begin{array}{cc}
+			a	&	b\\
+			b	&	a\\
+			c	&	c
+		\end{array}
+	\end{equation}
+	\begin{itemize}
+		\item Elected for $\prof_1$ and $\prof_2$: $a$ and $\{a,b\}$ respectively.
+		\item For the joined profile $\prof_1 \cup \prof_2$, Copeland elects $\{a,b\}$ instead of $a$.
+	\end{itemize}
+\end{frame}
 
 \begin{frame}[plain]
 	\addtocounter{framenumber}{-1}
