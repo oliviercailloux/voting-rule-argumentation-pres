@@ -1,0 +1,4 @@
+= Argumentation for voting rules: presentation
+
+See https://github.com/oliviercailloux/voting-rule-argumentation-pres/raw/master/autoarg.pdf[pres], https://github.com/mi-ki/voting-rule-argumentation[source code].
+
