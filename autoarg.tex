@@ -39,14 +39,14 @@
 	\frametitle{Introduction}
 	\begin{block}{Context}
 	\begin{itemize}
-		\item Voting rule: A systematic way of aggregating different opinions and decide
+		\item Voting rule: a systematic way of aggregating different opinions and decide
 		\item Multiple reasonable ways of doing this
 		\item Different voting rules have different interesting properties
 		\item None satisfy all desirable properties
 	\end{itemize}
 	\end{block}
 	\begin{block}{Our goal}
-		Easy communication about strengths and weaknesses of voting rules
+		We want to easily communicate about strengths and weaknesses of voting rules
 	\end{block}
 \end{frame}
 
@@ -197,7 +197,7 @@
 		\item That dictates some behavior of a voting rule
 		\item In some conditions
 		\item Usually seen as something to be satisfied
-		\item Ideally, intersection of such axioms defines exactly one rule
+		\item Ideally, some combination of axioms defines exactly one rule
 		\item Some axioms can be shown to be incompatible
 	\end{itemize}
 \end{frame}
@@ -205,7 +205,7 @@
 \begin{frame}
 	\frametitle{Unanimity}
 	\begin{definition}[Unanimity]
-		We may not select someone who has some unanimously preferred alternative as winner.
+		We may not select as winner someone who has some unanimously preferred alternative.
 	\end{definition}
 	\begin{equation}
 		\prof =
@@ -284,7 +284,7 @@
 \begin{frame}
 	\frametitle{Reinforcement}
 	\begin{definition}[Reinforcement]
-		When joining two sets of voters, exactly those alternatives that are selected as winners for both sets separately (if there are such alternatives) should be selected.
+		When joining two sets of voters, exactly those winners that each set accepts should be selected, if possible.
 	\end{definition}
 	\begin{example}
 		\begin{equation}
@@ -508,8 +508,8 @@
 	\begin{tikzpicture}[baseline]
     \begin{axis}[
     	title={Run-times for {\color{red}{2}}, {\color{green}{3}}, {\color{blue}{4}} and {\color{brown}{5}}
-    	alternatives in seconds.},
-    	height=0.8*\textheight,
+    	alternatives},
+    	height=0.75*\textheight,
     	xlabel={Voters},
     	ylabel={Run-time [minutes]},
     	xmin=2,xmax=10,
