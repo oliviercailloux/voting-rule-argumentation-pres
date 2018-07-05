@@ -11,7 +11,7 @@
 \title[Automatic argumentation]{Towards automatic argumentation about voting rules}
 \subject{Social choice}
 \keywords{empirical, theorem proving, automatic proofs}
-\author{Michael Kirsten \inst{1} \and \emph{Olivier Cailloux} \inst{2}}
+\author[Michael Kirsten, \emph{Olivier Cailloux}]{Michael Kirsten \inst{1} \and \emph{Olivier Cailloux} \inst{2}}
 \institute[KIT, LAMSADE]{\inst{1} Dept. of Informatics, Karlsruhe Institute of Technology (KIT) \and \inst{2} LAMSADE, Université Paris-Dauphine}
 \date{\formatdate{3}{7}{2018}}
 
@@ -39,14 +39,14 @@
 	\frametitle{Introduction}
 	\begin{block}{Context}
 	\begin{itemize}
-		\item Voting rule: a systematic way of aggregating different opinions and decide
+		\item Voting rule: A systematic way of aggregating different opinions and decide
 		\item Multiple reasonable ways of doing this
 		\item Different voting rules have different interesting properties
 		\item None satisfy all desirable properties
 	\end{itemize}
 	\end{block}
 	\begin{block}{Our goal}
-		We want to easily communicate about strength and weaknesses of voting rules.
+		Easy communication about strengths and weaknesses of voting rules
 	\end{block}
 \end{frame}
 
@@ -72,8 +72,8 @@
 		\item[Possible voters] $\allvoters = \set{1, 2, \ldots}$
 		\item[Voters] $\emptyset \subset \voters \subseteq \allvoters$
 %		\item[Linear orders on $A \subseteq \allalts$] $\linors$.
-		\item[Profile] partial function $\prof$ from $\allvoters$ to linear orders on $\allalts$.
-		\item[Voting rule] function $f$ mapping each $\prof$ to winners $\emptyset \subset A \subseteq \allalts$.
+		\item[Profile] Partial function $\prof$ from $\allvoters$ to linear orders on $\allalts$.
+		\item[Voting rule] Function $f$ mapping each $\prof$ to winners $\emptyset \subset A \subseteq \allalts$.
 	\end{description}
 	\vfill
 	\begin{center}
@@ -122,8 +122,8 @@
 	\begin{itemize}
 		\item Most top-1: $a$
 		\item $c$ is in the top 3 for everybody
-		\item delete worst first, lowest nb of pref: $c$, $b$, $e$, $a$ ⇒ $d$
-		\item delete worst first, from bottom: $a$, $e$, $d$, $b$ ⇒ $c$
+		\item Delete worst first, lowest nb of pref: $c$, $b$, $e$, $a$ ⇒ $d$
+		\item Delete worst first, from bottom: $a$, $e$, $d$, $b$ ⇒ $c$
 		\item Borda: $b$
 %		\item Condorcet: $c$
 	\end{itemize}
@@ -134,8 +134,8 @@
 	\frametitle{Borda}
 	Given a profile $\prof$:
 	\begin{itemize}
-		\item score of $a \in \allalts$: number of alternatives it beats
-		\item the highest scores win
+		\item Score of $a \in \allalts$: number of alternatives it beats
+		\item The highest scores win
 	\end{itemize}
 	
 	\begin{equation}
@@ -147,9 +147,9 @@
 		\end{array}
 	\end{equation}
 	\begin{itemize}
-		\item score $a$ is\dots? \pause $2 + 2 + 2 = 6$
-		\item score $b$ is $1 + 1 + 1 + 2 + 2 = 7$
-		\item score $c$ is $1 + 1 = 2$
+		\item Score $a$ is~\dots? \pause $2 + 2 + 2 = 6$
+		\item Score $b$ is $1 + 1 + 1 + 2 + 2 = 7$
+		\item Score $c$ is $1 + 1 = 2$
 	\end{itemize}
 	Winner: $b$.
 \end{frame}
@@ -158,9 +158,9 @@
 	\frametitle{Copeland}
 	Given a profile $\prof$:
 	\begin{itemize}
-		\item score of $a \in \allalts$: number of alternatives against which it obtains a strict majority…
+		\item Score of $a \in \allalts$: number of alternatives against which it obtains a strict majority~…
 		\item … minus: number of alternatives that obtains a strict majority against $a$
-		\item the highest scores win
+		\item The highest scores win
 	\end{itemize}
 	
 	
@@ -173,9 +173,9 @@
 		\end{array}
 	\end{equation}
 	\begin{itemize}
-		\item score $a$ is\dots? \pause $\card{\set{b, c}} - \card{\emptyset} = 2$
-		\item score $b$ is $\card{\set{c}} - \card{\set{a}} = 0$
-		\item score $c$ is $\card{\emptyset} - \card{\set{a, b}} = -2$
+		\item Score $a$ is~\dots? \pause $\card{\set{b, c}} - \card{\emptyset} = 2$
+		\item Score $b$ is $\card{\set{c}} - \card{\set{a}} = 0$
+		\item Score $c$ is $\card{\emptyset} - \card{\set{a, b}} = -2$
 	\end{itemize}
 	Winner: $a$.
 \end{frame}
@@ -190,14 +190,14 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{What’s an axiom?}
+	\frametitle{What is an axiom?}
 	\begin{itemize}
 		\item An axiom (for us) is a principle
 		\item Expressed formally
 		\item That dictates some behavior of a voting rule
 		\item In some conditions
 		\item Usually seen as something to be satisfied
-		\item Ideally, some union of some such axioms define exactly one rule
+		\item Ideally, intersection of some such axioms defines exactly one rule
 		\item Some axioms can be shown to be incompatible
 	\end{itemize}
 \end{frame}
@@ -205,7 +205,7 @@
 \begin{frame}
 	\frametitle{Unanimity}
 	\begin{definition}[Unanimity]
-		We may not select as winner someone who has some unanimously preferred alternative
+		We may not select someone who has some unanimously preferred alternative as winner.
 	\end{definition}
 	\begin{equation}
 		\prof =
@@ -215,7 +215,7 @@
 			c	&	c	&	a
 		\end{array}
 	\end{equation}
-	Constraint? \pause Do not take $c$ as $b$ is unanimously preferred to it.	\pause
+	Constraint? \pause Do not take $c$, as $b$ is unanimously preferred to it.	\pause
 	\begin{equation}
 		\prof =
 		\begin{array}{rrr}
@@ -233,7 +233,7 @@
 		We ought to take the Condorcet winner as sole winner if it exists.
 		\begin{itemize}
 			\item $a$ \emph{beats} $b$ iff more than half the voters prefer $a$ to $b$.
-			\item $a$ is a \emph{Condorcet winner} iff $a$ beats every other alternatives.
+			\item $a$ is a \emph{Condorcet winner} iff $a$ beats every other alternative.
 		\end{itemize}
 	\end{block}
 	\vfill
@@ -245,7 +245,7 @@
 			c	&	c	&	c	&	a	&	a
 		\end{array}
 	\end{equation}
-	 Who wins? \pause $a$
+	 Who wins? \pause $a$.
 \end{frame}
 
 \begin{frame}
@@ -259,15 +259,15 @@
 		\end{array}
 	\end{equation}
 	\begin{itemize}
-		\item Borda winners? \pause $b$
-		\item Condorcet winner? \pause $a$
+		\item Borda winner? \pause $b$.
+		\item Condorcet winner? \pause $a$.
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Cancellation}
 	\begin{definition}[Cancellation]
-		When all pairs of alternatives $(a, b)$ in a profile are such that $a$ is preferred to $b$ as many times as $b$ to $a$, we ought to select all winners as ex-æquo
+		When all pairs of alternatives $(a, b)$ in a profile are such that $a$ is preferred to $b$ as many times as $b$ to $a$, we ought to select all alternatives as winners.
 	\end{definition}
 	\begin{example}
 		\begin{equation}
@@ -284,7 +284,7 @@
 \begin{frame}
 	\frametitle{Reinforcement}
 	\begin{definition}[Reinforcement]
-		When joining two sets of voters, exactly those winners that each set accepts should be selected, if possible
+		When joining two sets of voters, exactly those alternatives that are selected as winners for both sets separately (if there are such alternatives) should should be selected.
 	\end{definition}
 	\begin{example}
 		\begin{equation}
@@ -320,11 +320,11 @@
 \subsection{Objective}
 \begin{frame}
 	\frametitle{Our objective}
-	Produce automatically “arguments” of the kind: voting rule $f$ does not satisfy axiom $a$ on profile $R$
+	Automatically produce “arguments” of the kind: Voting rule $f$ does not satisfy axiom $a$ on profile $R$.
 	\begin{itemize}
 		\item To better understand their differences
 		\item To help debate and choose a voting rule
-		\item To investigate empirical attitudes towards given voting rules
+		\item To empirically investigate attitudes towards given voting rules
 	\end{itemize}
 \end{frame}
 
@@ -352,7 +352,7 @@
 		\begin{itemize}
 			\item $f$ = Borda
 			\item $a$ = Condorcet
-			\item $f(\prof) = \set{b}$ (with $\prof$ used previously)
+			\item $f(\prof) = \set{b}$ (with $\prof$ as used before)
 			\item $a(\prof, \set{b})$ fails
 		\end{itemize}
 	\end{block}
@@ -378,7 +378,7 @@
 	\end{tikzpicture}
 	\begin{itemize}
 		\item We view it as a whole program \texttt{algo}
-		\item We use SBMC, a software for checking properties of algorithms
+		\item We use SBMC, a software for checking program properties
 		\item We let SBMC search for an input $\prof$ that fails \texttt{algo}
 		\item Similar to searching for existence of a bug
 	\end{itemize}
@@ -388,22 +388,22 @@
 \begin{frame}
 	\frametitle{Checking properties}
 %	\begin{lstlisting}
-		assume(x > 0);\\
-		i = 0;\\
-		x0 = x;\\
-		while (x < y) \{\\
-		\hspace{2cm}	x += y;\\
-		\hspace{2cm} i += 1;\\
+		\texttt{assume (x > 0);}\\
+		\texttt{i = 0;}\\
+		\texttt{x0 = x;}\\
+		\texttt{while (x < y) \{}\\
+		\phantom{\texttt{whil}}\texttt{x += y;}\\
+		\phantom{\texttt{whil}}\texttt{i += 1;}\\
 		\}\\
-		assert(x0+y*i >= x);
+		\texttt{assert (x0 + y*i >= x);}
 %		
 %	\end{lstlisting}
 	\begin{itemize}
-		\item Given algorithm with parameters (example: $x$, $y$)
+		\item Given an algorithm with parameters (e.g., $x$, $y$)
 		\item Check that some property holds
 		\item For all possible parameters
 		\item … that satisfy given assumptions
-		\item[⇒] search for $(x, y)$ that satisfy assumptions and fails assertion
+		\item[⇒] Search for $(x, y)$ that satisfy assumptions and fail assertion
 	\end{itemize}
 \end{frame}
 
@@ -470,14 +470,14 @@
 			a	&	a	&	c
 		\end{array}
 	\end{equation}
-	Borda rule elects $\{a,c\}$ instead of the Condorcet winner $c$
+	Borda rule elects $\{a,c\}$ instead of the Condorcet winner $c$.
 	
-	The example can be easily inspected manually
+	The example can be easily inspected manually.
 \end{frame}
 
 \begin{frame}
 	\frametitle{Borda fails Weak Majority}
-	A minimal counter-example in nb alts (< 1 sec):
+	A minimal counter-example in nb alternatives (< 1 sec):
 	\begin{equation}
 		\prof =
 		\begin{array}{ccccc}
@@ -498,7 +498,7 @@
 			b	&	a	&	d
 		\end{array}
 	\end{equation}
-	Borda elects $c$ instead of the majority winner $d$
+	Borda elects $c$ instead of the majority winner $d$.
 \end{frame}
 
 \subsection{Copeland}
@@ -570,7 +570,7 @@
 }
 
 \clearpage\pdfbookmark[2]{\refname}{\refname}
-\begin{frame}[allowframebreaks]
+\begin{frame}%[allowframebreaks]
 	\frametitle{\refname}
  	\bibliography{zotero}
 \end{frame}
@@ -578,9 +578,10 @@
 \clearpage\pdfbookmark{License}{License}
 \begin{frame}[plain]
 	\frametitle{License}
-	This presentation, and the associated \LaTeX{} code, are published under the \href{http://opensource.org/licenses/MIT}{MIT license}. Feel free to reuse (parts of) the presentation, under condition that you cite the author.
-	
-	Credits are to be given to \href{http://www.lamsade.dauphine.fr/~ocailloux/}{Olivier Cailloux}, Université Paris-Dauphine.
+	This presentation, and the associated \LaTeX{} code, are published under the \href{http://opensource.org/licenses/MIT}{MIT license}. Feel free to reuse (parts of) the presentation, under condition that you cite the authors.\\
+
+
+	Credits are to be given to \href{http://www.lamsade.dauphine.fr/~ocailloux/}{Olivier Cailloux} (Université Paris-Dauphine) and \href{https://formal.iti.kit.edu/~kirsten/?lang=en}{Michael Kirsten} (Karlsruhe Institute of Technology).
 \end{frame}
 \addtocounter{framenumber}{-1}
 \end{document}
